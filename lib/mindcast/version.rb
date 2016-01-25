@@ -1,6 +1,6 @@
 module Mindcast
-  # The version of the majord-api
+  # The version of the mindcast.io fetch service
   VERSION = "0.1.0"
-  # Major API version used to build routes
+  # API version used to build routes
   API_VERSION = "1"
 end

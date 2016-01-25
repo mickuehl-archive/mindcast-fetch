@@ -13,11 +13,13 @@ Dotenv.load
 
 # Require sinatra basics
 require 'sinatra/base'
+#require "sinatra/reloader" if development?
 
 # other gems
 
 # our modules etc
 require 'mindcast/version'
+require 'mindcast/extract'
 require 'mindcast/routes/endpoint'
 
 module Mindcast
