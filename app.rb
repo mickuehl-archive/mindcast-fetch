@@ -13,7 +13,6 @@ Dotenv.load
 
 # Require sinatra basics
 require 'sinatra/base'
-require "sinatra/reloader"
 
 # other gems
 
