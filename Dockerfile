@@ -1,4 +1,4 @@
-FROM ruby:2.2-slim
+FROM mindcast/ruby
 MAINTAINER Michael Kuehl <hello@ratchet.cc>
 
 #
