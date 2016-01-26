@@ -25,11 +25,12 @@ module Mindcast::Routes
       response = {}
       begin
         rss_feed = Nokogiri::HTML(open(feed))
+        rss_feed.remove_namespaces!
         
         # extract the data
-        data = extract_data rss_feed
-        links = extract_links rss_feed
-        items = nil
+        data = extract_common_data rss_feed
+        links = extract_common_links rss_feed
+        items = extract_details rss_feed
         
         # build the response
         _links = {
@@ -41,6 +42,7 @@ module Mindcast::Routes
           :attributes => data
         }
         _data[:links] = links if links != nil
+        _data[:included] = items if items != nil
         
         response = {
           :links => _links,

@@ -30,8 +30,21 @@ module Mindcast
     XPATH_AUTHOR = '//rss/channel/author'
     # links
     XPATH_LINKS = '//rss/channel/link'
+    # items
+    XPATH_ITEMS = '//rss/channel/item'
+    XPATH_ITEM_LINKS = 'link'
+    XPATH_ITEM_TITLE = 'title'
+    XPATH_ITEM_SUBTITLE = 'subtitle'
+    XPATH_ITEM_AUTHOR = 'author'
+    XPATH_ITEM_DESCRIPTION = 'description'
+    XPATH_ITEM_SUMMARY = 'summary'
+    XPATH_ITEM_DURATION = 'duration'
+    XPATH_ITEM_CONTENT = 'enclosure'
+    CONTENT_ATTR_URL = 'url'
+    CONTENT_ATTR_LENGTH = 'length'
+    CONTENT_ATTR_TYPE = 'type'
     
-    def extract_data(doc)
+    def extract_common_data(doc)
       
       data = {}
       
@@ -48,7 +61,6 @@ module Mindcast
         data[:language] = extract_xpath doc, XPATH_LANGUAGE if xpath_exists? doc, XPATH_LANGUAGE
         data[:copyright] = extract_xpath doc, XPATH_COPYRIGHT if xpath_exists? doc, XPATH_COPYRIGHT
         data[:generator] = extract_xpath doc, XPATH_GENERATOR if xpath_exists? doc, XPATH_GENERATOR
-        #data[:subtitle] = extract_xpath channel, XPATH_SUB_TITLE
         
       rescue Exception => e
         data[:error] = e.message
@@ -58,15 +70,53 @@ module Mindcast
       
     end
     
-    def extract_links(doc)
+    def extract_details(doc)
       
-      data = {}
+      data = []
       
       begin
-        links = doc.xpath XPATH_LINKS
+        items = doc.xpath XPATH_ITEMS
         
-        links.each do |link|
-          rel = link.attr('rel') 
+        items.each do |item|
+          _links = extract_links item, XPATH_ITEM_LINKS
+          _content = item.xpath XPATH_ITEM_CONTENT
+          
+          _attr = {}
+          _attr[:title] = extract_xpath(item, XPATH_ITEM_TITLE)
+          _attr[:subtitle] = extract_xpath(item, XPATH_ITEM_SUBTITLE) if xpath_exists?(item, XPATH_ITEM_SUBTITLE)
+          _attr[:author] = extract_xpath(item, XPATH_ITEM_AUTHOR) if xpath_exists?(item, XPATH_ITEM_AUTHOR)
+          _attr[:description] = extract_xpath(item, XPATH_ITEM_DESCRIPTION) if xpath_exists?(item, XPATH_ITEM_DESCRIPTION)
+          _attr[:summary] = extract_xpath(item, XPATH_ITEM_SUMMARY) if xpath_exists?(item, XPATH_ITEM_SUMMARY)
+          _attr[:duration] = extract_xpath(item, XPATH_ITEM_DURATION) if xpath_exists?(item, XPATH_ITEM_DURATION)
+          _attr[:content_url] = _content.attr(CONTENT_ATTR_URL)
+          _attr[:content_length] = _content.attr(CONTENT_ATTR_LENGTH)
+          _attr[:content_type] = _content.attr(CONTENT_ATTR_TYPE)
+          
+          i = {
+            :type => 'item',
+            :id => 'y',
+            :attributes => _attr
+          }
+          i[:links] = _links if _links != nil
+          data << i
+        end
+        
+      rescue Exception => e
+        puts e.message
+      end
+      
+      return data if !(data.length == 0)
+      nil
+      
+    end
+    
+    def extract_links(doc, path)
+      
+      data = {}
+    
+      begin
+        doc.xpath(path).each do |link|
+          rel = link.attr('rel')
           data[rel] = link.attr('href') if rel != nil && rel != ''
         end
         
@@ -75,6 +125,10 @@ module Mindcast
       
       return data if !data.empty?
       nil
+    end
+    
+    def extract_common_links(doc)
+      return extract_links doc, XPATH_LINKS
     end
     
     def extract_image(root)
