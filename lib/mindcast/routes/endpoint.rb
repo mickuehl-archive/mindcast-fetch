@@ -30,7 +30,7 @@ module Mindcast::Routes
         # extract the data
         data = extract_common_data rss_feed
         links = extract_common_links rss_feed
-        items = extract_details rss_feed
+        items = extract_details(rss_feed, feed)
         
         # build the response
         _links = {
@@ -38,7 +38,7 @@ module Mindcast::Routes
         }
         _data = {
           :type => 'podcast',
-          :id => 'x',
+          :id => hash(feed + data[:title]),
           :attributes => data
         }
         _data[:links] = links if links != nil

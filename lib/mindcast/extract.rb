@@ -1,6 +1,7 @@
 
 require 'open-uri'
 require 'nokogiri'
+require 'digest/md5'
 
 module Mindcast
   
@@ -37,6 +38,7 @@ module Mindcast
     XPATH_ITEM_SUBTITLE = 'subtitle'
     XPATH_ITEM_AUTHOR = 'author'
     XPATH_ITEM_DESCRIPTION = 'description'
+    XPATH_ITEM_GUID = 'guid'
     XPATH_ITEM_SUMMARY = 'summary'
     XPATH_ITEM_DURATION = 'duration'
     XPATH_ITEM_CONTENT = 'enclosure'
@@ -70,7 +72,7 @@ module Mindcast
       
     end
     
-    def extract_details(doc)
+    def extract_details(doc, feed)
       
       data = []
       
@@ -82,19 +84,20 @@ module Mindcast
           _content = item.xpath XPATH_ITEM_CONTENT
           
           _attr = {}
+          _attr[:guid] = extract_xpath(item, XPATH_ITEM_GUID) if xpath_exists?(item, XPATH_ITEM_GUID)
           _attr[:title] = extract_xpath(item, XPATH_ITEM_TITLE)
           _attr[:subtitle] = extract_xpath(item, XPATH_ITEM_SUBTITLE) if xpath_exists?(item, XPATH_ITEM_SUBTITLE)
           _attr[:author] = extract_xpath(item, XPATH_ITEM_AUTHOR) if xpath_exists?(item, XPATH_ITEM_AUTHOR)
           _attr[:description] = extract_xpath(item, XPATH_ITEM_DESCRIPTION) if xpath_exists?(item, XPATH_ITEM_DESCRIPTION)
           _attr[:summary] = extract_xpath(item, XPATH_ITEM_SUMMARY) if xpath_exists?(item, XPATH_ITEM_SUMMARY)
-          _attr[:duration] = extract_xpath(item, XPATH_ITEM_DURATION) if xpath_exists?(item, XPATH_ITEM_DURATION)
+          _attr[:duration] = duration( extract_xpath(item, XPATH_ITEM_DURATION)) if xpath_exists?(item, XPATH_ITEM_DURATION)
           _attr[:content_url] = _content.attr(CONTENT_ATTR_URL)
-          _attr[:content_length] = _content.attr(CONTENT_ATTR_LENGTH)
+          _attr[:content_length] = (_content.attr(CONTENT_ATTR_LENGTH).to_s).to_i
           _attr[:content_type] = _content.attr(CONTENT_ATTR_TYPE)
           
           i = {
             :type => 'item',
-            :id => 'y',
+            :id => hash(feed + _attr[:title]),
             :attributes => _attr
           }
           i[:links] = _links if _links != nil
@@ -102,7 +105,8 @@ module Mindcast
         end
         
       rescue Exception => e
-        puts e.message
+        i[:error] = e.message
+        data << i
       end
       
       return data if !(data.length == 0)
@@ -157,6 +161,22 @@ module Mindcast
         return false
       end
       return true
+    end
+    
+    def hash(s1,s2='')
+      return Digest::MD5.hexdigest(s1 + s2)
+    end
+    
+    def duration(s)
+      parts = s.split(':')
+      case parts.length
+        when 1
+          return parts[0].to_i
+        when 2
+          return (parts[0].to_i * 60) + parts[1].to_i
+        when 3
+          return (parts[0].to_i * 3600) + (parts[1].to_i * 60) + parts[2].to_i
+      end
     end
     
   end
