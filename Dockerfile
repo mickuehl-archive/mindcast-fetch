@@ -20,6 +20,7 @@ RUN bundle install
 # variables that controll the creation of the app
 ENV REPO git_repo
 ENV BRANCH master
+ENV RACK_ENV production
 
 # 
 # default port

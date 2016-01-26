@@ -19,4 +19,4 @@ else
 fi
 
 # start the app server
-bundle exec rackup -b 0.0.0.0
+RACK_ENV=$RACK_ENV bundle exec rackup -o 0.0.0.0
