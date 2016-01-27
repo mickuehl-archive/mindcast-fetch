@@ -130,11 +130,7 @@ module Mindcast
       return data if !data.empty?
       nil
     end
-    
-    def extract_common_links(doc)
-      return extract_links doc, XPATH_LINKS
-    end
-    
+        
     def extract_image(root)
       images = root.xpath XPATH_IMAGE
       images.each do |image|
@@ -170,11 +166,11 @@ module Mindcast
     def duration(s)
       parts = s.split(':')
       case parts.length
-        when 1
+        when 1 # sec
           return parts[0].to_i
-        when 2
+        when 2 # min:sec
           return (parts[0].to_i * 60) + parts[1].to_i
-        when 3
+        when 3 # hour:min:sec
           return (parts[0].to_i * 3600) + (parts[1].to_i * 60) + parts[2].to_i
       end
     end

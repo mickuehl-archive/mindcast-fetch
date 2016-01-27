@@ -29,7 +29,7 @@ module Mindcast::Routes
         
         # extract the data
         data = extract_common_data rss_feed
-        links = extract_common_links rss_feed
+        links = extract_links rss_feed, XPATH_LINKS
         items = extract_details(rss_feed, feed)
         
         # build the response
