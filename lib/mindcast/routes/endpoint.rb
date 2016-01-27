@@ -10,12 +10,10 @@ module Mindcast::Routes
     include Mindcast::Extract
     
     configure do
-      #set :docker_url, lambda { ENV['DOCKER_URL'] || "http://0.0.0.0:6001" }
-      #set :registry_url, lambda { ENV['REGISTRY_URL'] || "http://0.0.0.0:5001" }
-      #set :repository_home, lambda { ENV['REPOSITORY_HOME'] || "/opt/majordomus/data/repository" }
+      # configure the endpoint ...
     end
     
-    get "/#{Mindcast::API_VERSION}/" do
+    get '/' do
       content_type :json
       response_status = 200
             
@@ -60,6 +58,17 @@ module Mindcast::Routes
       
     end
     
+    get '/info' do
+      content_type :json
+      response_status = 200
+      
+      response = data_response(request.url,'info',0,{:version => Mindcast::VERSION})
+      
+      # send a reply
+      status response_status
+      return response.to_json
+    end
+  
     private
         
     def empty_response(link)
@@ -72,6 +81,7 @@ module Mindcast::Routes
     end
     
     def data_response(link, type, id, attr, related=nil)
+      
       if related != nil
         data = {
           :links => {

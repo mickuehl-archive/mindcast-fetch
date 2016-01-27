@@ -2,7 +2,6 @@ GEM
   remote: https://rubygems.org/
   specs:
     backports (3.6.7)
-    dotenv (2.0.2)
     mini_portile2 (2.0.0)
     multi_json (1.11.2)
     nokogiri (1.6.7.1)
@@ -31,7 +30,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  dotenv
   nokogiri
   puma
   rack-standards

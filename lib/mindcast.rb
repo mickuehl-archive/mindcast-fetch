@@ -10,7 +10,8 @@ module Mindcast
   require 'mindcast/version'
   
   def app_home
-    ENV['APP_HOME'] || "/opt/majordomus/data/apps"
+    # configure the app
+    #ENV['APP_HOME'] || "/opt/majordomus/data/apps"
   end
   
   module_function :app_home
