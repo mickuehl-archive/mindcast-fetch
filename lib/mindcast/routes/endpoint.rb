@@ -2,12 +2,14 @@
 require 'open-uri'
 require 'nokogiri'
 require 'mindcast/extract'
+require 'mindcast/jsonapi'
 
 module Mindcast::Routes
   
   class Endpoint < Sinatra::Application
     
     include Mindcast::Extract
+    include Mindcast::JsonApi
     
     configure do
       # configure the endpoint ...
@@ -69,61 +71,6 @@ module Mindcast::Routes
       return response.to_json
     end
   
-    private
-        
-    def empty_response(link)
-      {
-        :links => {
-          :self => link
-        },
-        :data => []
-      }
-    end
-    
-    def data_response(link, type, id, attr, related=nil)
-      
-      if related != nil
-        data = {
-          :links => {
-            :self => link,
-            :related => related
-          },
-          :data => {
-            :type => type,
-            :id => id,
-            :attributes => attr
-          }
-        }
-      else
-        data = {
-          :links => {
-            :self => link
-          },
-          :data => {
-            :type => type,
-            :id => id,
-            :attributes => attr
-          }
-        }
-      end
-      
-      data
-      
-    end
-    
-    def error_response(link, message, status, code)
-      {
-        :links => {
-          :self => link
-        },
-        :errors => [{
-          :status => status,
-          :code => code,
-          :title => message
-          }]
-      }
-    end
-    
   end
   
 end
