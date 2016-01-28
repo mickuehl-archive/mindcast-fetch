@@ -4,9 +4,9 @@ require 'nokogiri'
 require 'digest/md5'
 
 module Mindcast
-  
+
   module Extract
-    
+
     # namespaces
     NS_ITUNES     = 'itunes'
     NS_ATOM       = 'atom'
@@ -14,7 +14,7 @@ module Mindcast
     NS_ATOM_URL   = 'http://www.w3.org/2005/Atom'
     NS_BITLOVE    = 'bitlove'
     NS_BITLOVE_URL  = 'http://bitlove.org'
-    
+
     # top-level
     XPATH_CHANNEL = '//rss/channel'
     # details
@@ -31,7 +31,7 @@ module Mindcast
     XPATH_AUTHOR = '//rss/channel/author'
     # links
     XPATH_LINKS = '//rss/channel/link'
-    # items
+    # episodes
     XPATH_ITEMS = '//rss/channel/item'
     XPATH_ITEM_LINKS = 'link'
     XPATH_ITEM_TITLE = 'title'
@@ -45,13 +45,16 @@ module Mindcast
     CONTENT_ATTR_URL = 'url'
     CONTENT_ATTR_LENGTH = 'length'
     CONTENT_ATTR_TYPE = 'type'
-    
-    def extract_common_data(doc)
-      
+    # chapters
+    XPATH_CHAPTERS = 'chapters'
+    XPATH_CHAPTER = 'chapter'
+
+    def extract_podcast(doc)
+
       data = {}
-      
+
       begin
-        
+
         data[:title] = extract_xpath doc, XPATH_TITLE
         data[:subtitle] = extract_xpath doc, XPATH_SUB_TITLE
         data[:summary] = extract_xpath doc, XPATH_SUMMARY
@@ -63,26 +66,25 @@ module Mindcast
         data[:language] = extract_xpath doc, XPATH_LANGUAGE if xpath_exists? doc, XPATH_LANGUAGE
         data[:copyright] = extract_xpath doc, XPATH_COPYRIGHT if xpath_exists? doc, XPATH_COPYRIGHT
         data[:generator] = extract_xpath doc, XPATH_GENERATOR if xpath_exists? doc, XPATH_GENERATOR
-        
+
       rescue Exception => e
         data[:error] = e.message
       end
-      
+
       data
-      
+
     end
-    
-    def extract_details(doc, feed)
-      
+
+    def extract_episodes(doc, feed)
       data = []
-      
+
       begin
         items = doc.xpath XPATH_ITEMS
-        
+
         items.each do |item|
           _links = extract_links item, XPATH_ITEM_LINKS
           _content = item.xpath XPATH_ITEM_CONTENT
-          
+
           _attr = {}
           _attr[:guid] = extract_xpath(item, XPATH_ITEM_GUID) if xpath_exists?(item, XPATH_ITEM_GUID)
           _attr[:title] = extract_xpath(item, XPATH_ITEM_TITLE)
@@ -94,43 +96,73 @@ module Mindcast
           _attr[:content_url] = _content.attr(CONTENT_ATTR_URL)
           _attr[:content_length] = (_content.attr(CONTENT_ATTR_LENGTH).to_s).to_i
           _attr[:content_type] = _content.attr(CONTENT_ATTR_TYPE)
-          
+
+          # check if there are chapter notes (xmlns:psc="http://podlove.org/simple-chapters")
+          _chapters = extract_chapters item, feed
+
           i = {
-            :type => 'item',
+            :type => 'episode',
             :id => hash(feed + _attr[:title]),
             :attributes => _attr
           }
           i[:links] = _links if _links != nil
+          i[:included] = _chapters if _chapters != nil
+
           data << i
         end
-        
+
       rescue Exception => e
         i[:error] = e.message
         data << i
       end
-      
-      return data if !(data.length == 0)
+
+      return data if data.length != 0
       nil
-      
+
     end
-    
+
+    def extract_chapters(item, feed)
+      data = []
+      chapters = item.xpath(XPATH_CHAPTERS)
+
+      return nil if chapters.length == 0
+
+      begin
+        chapters.xpath(XPATH_CHAPTER).each do |chapter|
+          start = chapter.attr('start')
+          title = chapter.attr('title')
+          data << {
+            :type => 'chapter',
+            :id => hash(feed, title),
+            :attributes => {
+              :start => start,
+              :title => title
+            }
+          }
+        end
+      rescue
+      end
+
+      return data if data.length != 0
+      nil
+
+    end
+
     def extract_links(doc, path)
-      
       data = {}
-    
+
       begin
         doc.xpath(path).each do |link|
           rel = link.attr('rel')
           data[rel] = link.attr('href') if rel != nil && rel != ''
         end
-        
       rescue
       end
-      
+
       return data if !data.empty?
       nil
     end
-        
+
     def extract_image(root)
       images = root.xpath XPATH_IMAGE
       images.each do |image|
@@ -138,7 +170,7 @@ module Mindcast
       end
       return nil
     end
-    
+
     def extract_xpath(root, path, default='')
       begin
         t = root.xpath(path).text
@@ -148,7 +180,7 @@ module Mindcast
       end
       return t
     end
-    
+
     def xpath_exists?(root, path)
       begin
         e = root.xpath path
@@ -158,11 +190,11 @@ module Mindcast
       end
       return true
     end
-    
+
     def hash(s1,s2='')
       return Digest::MD5.hexdigest(s1 + s2)
     end
-    
+
     def duration(s)
       parts = s.split(':')
       case parts.length
@@ -174,6 +206,6 @@ module Mindcast
           return (parts[0].to_i * 3600) + (parts[1].to_i * 60) + parts[2].to_i
       end
     end
-    
+
   end
 end
