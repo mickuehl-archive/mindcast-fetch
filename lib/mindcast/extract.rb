@@ -85,33 +85,39 @@ module Mindcast
           _links = extract_links item, XPATH_ITEM_LINKS
           _content = item.xpath XPATH_ITEM_CONTENT
 
-          _attr = {}
-          _attr[:guid] = extract_xpath(item, XPATH_ITEM_GUID) if xpath_exists?(item, XPATH_ITEM_GUID)
-          _attr[:title] = extract_xpath(item, XPATH_ITEM_TITLE)
-          _attr[:subtitle] = extract_xpath(item, XPATH_ITEM_SUBTITLE) if xpath_exists?(item, XPATH_ITEM_SUBTITLE)
-          _attr[:author] = extract_xpath(item, XPATH_ITEM_AUTHOR) if xpath_exists?(item, XPATH_ITEM_AUTHOR)
-          _attr[:description] = extract_xpath(item, XPATH_ITEM_DESCRIPTION) if xpath_exists?(item, XPATH_ITEM_DESCRIPTION)
-          _attr[:summary] = extract_xpath(item, XPATH_ITEM_SUMMARY) if xpath_exists?(item, XPATH_ITEM_SUMMARY)
-          _attr[:duration] = duration( extract_xpath(item, XPATH_ITEM_DURATION)) if xpath_exists?(item, XPATH_ITEM_DURATION)
-          _attr[:content_url] = _content.attr(CONTENT_ATTR_URL)
-          _attr[:content_length] = (_content.attr(CONTENT_ATTR_LENGTH).to_s).to_i
-          _attr[:content_type] = _content.attr(CONTENT_ATTR_TYPE)
+          if _content.length != 0
+            # only if there is actually content
+            _attr = {}
+            _attr[:guid] = extract_xpath(item, XPATH_ITEM_GUID) if xpath_exists?(item, XPATH_ITEM_GUID)
+            _attr[:title] = extract_xpath(item, XPATH_ITEM_TITLE)
+            _attr[:subtitle] = extract_xpath(item, XPATH_ITEM_SUBTITLE) if xpath_exists?(item, XPATH_ITEM_SUBTITLE)
+            _attr[:author] = extract_xpath(item, XPATH_ITEM_AUTHOR) if xpath_exists?(item, XPATH_ITEM_AUTHOR)
+            _attr[:description] = extract_xpath(item, XPATH_ITEM_DESCRIPTION) if xpath_has_content?(item, XPATH_ITEM_DESCRIPTION)
+            _attr[:summary] = extract_xpath(item, XPATH_ITEM_SUMMARY) if xpath_has_content?(item, XPATH_ITEM_SUMMARY)
+            _attr[:duration] = duration( extract_xpath(item, XPATH_ITEM_DURATION)) if xpath_exists?(item, XPATH_ITEM_DURATION)
 
-          # check if there are chapter notes (xmlns:psc="http://podlove.org/simple-chapters")
-          _chapters = extract_chapters item, feed
+            _attr[:content_url] = _content.attr(CONTENT_ATTR_URL)
+            _attr[:content_length] = (_content.attr(CONTENT_ATTR_LENGTH).to_s).to_i
+            _attr[:content_type] = _content.attr(CONTENT_ATTR_TYPE)
 
-          i = {
-            :type => 'episode',
-            :id => hash(feed + _attr[:title]),
-            :attributes => _attr
-          }
-          i[:links] = _links if _links != nil
-          i[:included] = _chapters if _chapters != nil
+            # check if there are chapter notes (xmlns:psc="http://podlove.org/simple-chapters")
+            _chapters = extract_chapters item, feed
 
-          data << i
+            # complete the object
+            i = {
+              :type => 'episode',
+              :id => hash(feed + _attr[:title]),
+              :attributes => _attr
+            }
+            i[:links] = _links if _links != nil
+            i[:included] = _chapters if _chapters != nil
+
+            data << i
+          end
         end
 
       rescue Exception => e
+        puts e.backtrace
         i[:error] = e.message
         data << i
       end
@@ -141,6 +147,7 @@ module Mindcast
           }
         end
       rescue
+        #puts e.backtrace
       end
 
       return data if data.length != 0
@@ -185,6 +192,17 @@ module Mindcast
       begin
         e = root.xpath path
         return false if e == nil or e.length == 0
+      rescue
+        return false
+      end
+      return true
+    end
+
+    def xpath_has_content?(root, path)
+      begin
+        e = root.xpath path
+        return false if e == nil or e.length == 0
+        return false if e.text.empty?
       rescue
         return false
       end

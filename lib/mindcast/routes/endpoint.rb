@@ -50,8 +50,6 @@ module Mindcast::Routes
         }
 
       rescue Exception => e
-        puts e.message
-        puts e.backtrace
         response = error_response request.url, e.message, "500", "500"
         response_status = 500
       end
