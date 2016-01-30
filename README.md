@@ -15,9 +15,14 @@ Responses from the service conform to the basic ideas of the (JSON API specifica
 
 ### GET /
 
+#### Parameters
+
+* f	RSS feed url, mandatory
+* reload	true | false reload the rss feed if cached, development only, optional
+
 Example
 
-	curl http://localhost/?f=<podcast_feed_url>
+	curl http://localhost/?f=<podcast_feed_url>&reload=true
 
 ```json
 {
@@ -91,6 +96,10 @@ Example
 ### GET /info
 
 Returns the current version of the service.
+
+#### Parameters
+
+None
 
 Example
 
