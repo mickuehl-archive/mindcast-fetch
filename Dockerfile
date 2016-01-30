@@ -17,12 +17,12 @@ RUN bundle install
 # END BASIC DOCKERFILE
 #
 
-# variables that controll the creation of the app
-ENV REPO git_repo
+# variables that control the creation of the app
+ENV REPO https://github.com/mindcastio/mindcast-fetch.git
 ENV BRANCH master
 ENV RACK_ENV production
 
-# 
+#
 # default port
 EXPOSE 9292
 
