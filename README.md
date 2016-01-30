@@ -22,30 +22,30 @@ Example
 ```json
 {
 	"links": {
-		"self": "http://localhost:3000/?f=http://freakshow.fm/feed/m4a"
-	}
+		"self": "http://localhost/?f=<podcast_feed_url>"
+	},
 	"data": {
 		"type": "podcast",
 		"id": "1f115de222dc0d09067aa339a16e98bb",
 		"attributes": {
-			"title": "Freak Show",
-			"subtitle": "Menschen! Technik! Sensationen!",
-			"summary": "Die muntere Talk Show ...",
-			"description": "Menschen! Technik! Sensationen!",
-			"image": "http://freakshow.fm/wp-co...94270edf037e877/freak-show_original.jpg",
-			"author": "Metaebene Personal Media - Tim Pritlove",
-			"owner_name": "Tim Pritlove",
-			"owner_email": "freakshow@metaebene.me",
+			"title": "title",
+			"subtitle": "subtitle (optional)",
+			"summary": "summary (optional)",
+			"description": "description (optional)",
+			"image": "http://...jpg",
+			"author": "author (optional)",
+			"owner_name": "podcast owner",
+			"owner_email": "podcast owner email",
 			"language": "de-DE",
-			"generator": "Podlove Podcast Publisher v2.3.8"
+			"generator": "generator app (optional)"
 		},
 		"links": {
-			"self": "http://feeds.metaebene.me/freakshow/m4a",
-			"alternate": "http://freakshow.fm/feed/opus",
-			"next": "http://freakshow.fm/feed/m4a?paged=2",
-			"first": "http://freakshow.fm/feed/m4a",
-			"last": "http://freakshow.fm/feed/m4a?paged=6",
-			"hub": "http://metaebene.superfeedr.com",
+			"self": "http://<podcast_feed_url>",
+			"alternate": "http://<podcast_feed_url>/other_encoding",
+			"next": "http://<podcast_feed_url>?paged=2",
+			"first": "http://<podcast_feed_url>",
+			"last": "http://<podcast_feed_url>?paged=xxx",
+			"hub": "http://....",
 			"payment": "https://flattr.com/subm...",
 		},
 		"included": {
@@ -53,13 +53,13 @@ Example
 			"id": "afca730a17b393c6e4210d427db469fa",
 			"attributes": {
 				"guid": "podlove-2016-01-27t23:47:44+00:00-deaaf34c7b9847f",
-				"title": "FS170 Laden läuft",
-				"subtitle": "Bitcoin — Wikipedia-Relevanz — ...",
-				"author": "Metaebene Personal Media - Tim Pritlove",
-				"summary": "Eine Sendung in kleine...",
+				"title": "title",
+				"subtitle": "subtitle (optional)",
+				"author": "author (optional)",
+				"summary": "summary (optional)",
 				"duration": 12482,
-				"content_url": "http://tracking.feedpress.it/link/13453/2442894/fs170-laden-laeuft.m4a",
-				"content_length": 80153098,
+				"content_url": "http://...m4a",
+				"content_length": 8030158,
 				"content_type": "audio/mp4",
 			},
 			"links": {
