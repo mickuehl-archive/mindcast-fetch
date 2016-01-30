@@ -11,6 +11,13 @@ The service only exposes two endpoints at the moment:
 * GET /
 * GET /info
 
+### GET /
+
+### GET /info
+
+Returns the current version of the service.
+
+
 ## Deployment
 
 ### Build
