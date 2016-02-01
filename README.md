@@ -37,11 +37,12 @@ Example
 			"subtitle": "subtitle (optional)",
 			"summary": "summary (optional)",
 			"description": "description (optional)",
-			"image": "http://...jpg",
+			"image": "http://...jpg (optional)",
 			"author": "author (optional)",
-			"owner_name": "podcast owner",
-			"owner_email": "podcast owner email",
-			"language": "de-DE",
+			"owner_name": "podcast owner (optional)",
+			"owner_email": "podcast owner email (optional)",
+			"language": "de-DE (optional)",
+			"copyright" : "copyright (optional)"
 			"generator": "generator app (optional)"
 		},
 		"links": {
@@ -57,12 +58,12 @@ Example
 			"type": "episode",
 			"id": "afca730a17b393c6e4210d427db469fa",
 			"attributes": {
-				"guid": "podlove-2016-01-27t23:47:44+00:00-deaaf34c7b9847f",
+				"guid": "podlove-2016-01-27t23:47:44+00:00-deaaf34c7b9847f (optional)",
 				"title": "title",
 				"subtitle": "subtitle (optional)",
 				"author": "author (optional)",
 				"summary": "summary (optional)",
-				"duration": 12482,
+				"duration": 12482, # (optional)
 				"content_url": "http://...m4a",
 				"content_length": 8030158,
 				"content_type": "audio/mp4",
@@ -130,4 +131,4 @@ This image is based on the generic Ruby / RAILS image `mindcast/ruby`
 
 ### Create
 
-docker create --name fetch -p <private_ipv4>:<public_port>:9292 mindcast/fetch
+	docker create --name mindcast-fetch -p <private_ipv4>:<public_port>:9292 mindcast/fetch
