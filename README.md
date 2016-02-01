@@ -42,7 +42,7 @@ Example
 			"owner_name": "podcast owner (optional)",
 			"owner_email": "podcast owner email (optional)",
 			"language": "de-DE (optional)",
-			"copyright" : "copyright (optional)"
+			"copyright" : "copyright (optional)",
 			"generator": "generator app (optional)"
 		},
 		"links": {
